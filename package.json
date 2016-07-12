@@ -1,0 +1,27 @@
+{
+  "name": "moin-fs-watcher",
+  "description": "Adds automatic loading and reloading of services to the Moin Application Server",
+    "keywords": [
+      "microservice",
+      "reloading",
+      "hot-swap",
+      "moin"
+    ],
+    "author": "Torben Hartmann",
+    "homapage": "http://moinjs.github.io/",
+    "license": "MIT",
+    "repository": "moinjs/moin-fs-watcher",
+    "engines": {
+      "node": ">=6.0"
+    },
+  "version": "1.0.0",
+  "moin": {
+    "type": "module",
+    "moduleDependencies": [
+      "moin-service-loader"
+    ]
+  },
+  "dependencies": {
+    "chokidar": "^1.6.0"
+  }
+}
