@@ -28,7 +28,7 @@ let getRealFolder = (folder)=> new Promise((resolve, reject)=> {
 const LOADED = Symbol("LOADED");
 const INVALID = Symbol("INVALID");
 
-module.exports = function (moin) {
+module.exports = function (moin, settings) {
     function loadFolder(folder) {
         let loaded = {};
         let watchers = {};
@@ -111,4 +111,9 @@ module.exports = function (moin) {
     moin.registerMethod("addServiceFolder", function (folder, options = {}) {
         return getRealFolder(folder).then(folder=>loadFolder(folder));
     });
+
+    if (settings.serviceFolders.length > 0) {
+        settings.serviceFolders.forEach(folder=>moin.addServiceFolder(folder));
+    }
+
 };
