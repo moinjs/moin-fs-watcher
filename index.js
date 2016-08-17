@@ -29,8 +29,9 @@ const LOADED = Symbol("LOADED");
 const INVALID = Symbol("INVALID");
 
 module.exports = function (moin, settings) {
-
+    let logger = moin.getLogger("fs-watcher");
     let idMap = new Map();
+    let pathMap = new Map();
 
     moin.on("unloadService", (id)=> {
         if (idMap.has(id))idMap.delete(id);
@@ -46,8 +47,9 @@ module.exports = function (moin, settings) {
         }
 
         function loadService(subFolder) {
-
             let servicePath = path.join(folder, subFolder);
+            pathMap.set(servicePath, ()=>reloadService(subFolder));
+
             return moin.load(servicePath)
                 .then(service=> {
                     let init = false;
@@ -121,6 +123,7 @@ module.exports = function (moin, settings) {
     });
     moin.on("serviceChanged", function (id) {
         if (idMap.has(id))idMap.get(id)();
+        if (pathMap.has(id))pathMap.get(id)();
     });
 
     if (settings.serviceFolders.length > 0) {
