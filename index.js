@@ -29,6 +29,13 @@ const LOADED = Symbol("LOADED");
 const INVALID = Symbol("INVALID");
 
 module.exports = function (moin, settings) {
+
+    let idMap = new Map();
+
+    moin.on("unloadService", (id)=> {
+        if (idMap.has(id))idMap.delete(id);
+    });
+
     function loadFolder(folder) {
         let loaded = {};
         let watchers = {};
@@ -68,6 +75,7 @@ module.exports = function (moin, settings) {
                         .then(function (id) {
                             loaded[subFolder] = id;
                             states[subFolder] = LOADED;
+                            idMap.set(id, ()=>reloadService(subFolder));
                         }, function (err) {
                             states[subFolder] = INVALID;
                         });
@@ -87,7 +95,7 @@ module.exports = function (moin, settings) {
                     delete states[path];
                 }
             }
-            return Promise.resolve()
+            return Promise.resolve();
         }
 
         let watcher = chokidar.watch(folder, {
@@ -110,6 +118,9 @@ module.exports = function (moin, settings) {
 
     moin.registerMethod("addServiceFolder", function (folder, options = {}) {
         return getRealFolder(folder).then(folder=>loadFolder(folder));
+    });
+    moin.on("serviceChanged", function (id) {
+        if (idMap.has(id))idMap.get(id)();
     });
 
     if (settings.serviceFolders.length > 0) {
